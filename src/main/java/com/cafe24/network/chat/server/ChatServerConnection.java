@@ -49,7 +49,7 @@ public class ChatServerConnection implements Runnable {
 					continue;
 				}
 				if ("join".equals(tokens[0])) {
-					if (!doJoin(tokens[1], pr)) {
+					if (!doJoin(request.substring(5), pr)) {
 						pr.println("DUPLICATE");
 						break;
 					}
