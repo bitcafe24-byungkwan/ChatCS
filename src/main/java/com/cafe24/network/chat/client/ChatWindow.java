@@ -31,7 +31,7 @@ public class ChatWindow {
 	private PrintWriter _pw;
 	private Socket _sock;
 	public ChatWindow(String name, Socket sock) throws UnsupportedEncodingException, IOException {
-		frame = new Frame(name);
+		frame = new Frame(name);		
 		pannel = new Panel();
 		buttonSend = new Button("Send");
 		textField = new TextField();
@@ -92,8 +92,28 @@ public class ChatWindow {
 		}
 		System.exit(0);
 	}
-	private void updateTextArea(String message) {
-		textArea.append(message);
+	private void updateTextArea(String msg) {
+		
+		if(msg.length()>5)
+		{			
+			if(msg.substring(0,5).equals("whis:"))
+			{
+				String[] tokens = msg.split(":");
+				if(tokens[1].equals(frame.getTitle())) {
+					int index = msg.indexOf("[whis]",5+tokens[1].length());
+					textArea.append(msg.substring(index));
+					textArea.append("\n");
+				} 
+				return;				
+			}
+		}
+		
+		String[] tokens = msg.split(":");
+		if (tokens[0].equals(frame.getTitle()))
+		{
+			msg = "[ME]" + msg.substring(msg.indexOf(":")+1);
+		}
+		textArea.append(msg);
 		textArea.append("\n");
 	}
 	
@@ -102,10 +122,38 @@ public class ChatWindow {
 		if (textField.getText().equals("quit"))	{
 			_pw.println("quit:");
 			finish();
-		}		
-		String msg = "message:" + textField.getText() + "\r\n";
-		_pw.println(msg);
+		};
 		
+		//귓속말
+		// /whis:nickname:ma
+		String msg;
+		if(textField.getText().length()>5)
+		{			
+			if (textField.getText().substring(0,6).equals("/whis:"))
+			{
+
+				int indexMsg = textField.getText().indexOf(":", 6);
+				if (indexMsg > 0) {
+					updateTextArea("try to:" + textField.getText().substring(6,indexMsg)
+							+ "-->" + textField.getText().substring(indexMsg+1));
+					msg = "whis:" + frame.getTitle() + ":" 
+				+ textField.getText().substring(6,indexMsg)
+				+":"+textField.getText().substring(indexMsg+1)
+				+ "\r\n";
+					_pw.println(msg);
+					
+					
+
+					textField.setText("");
+					textField.requestFocus();
+					return;
+				}
+			}
+		}
+
+		msg = "message:" + textField.getText() + "\r\n";		
+
+		_pw.println(msg);
 		textField.setText("");
 		textField.requestFocus();
 	}

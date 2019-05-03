@@ -21,8 +21,8 @@ public class ChatClientApp {
 				System.out.println("대화명을 입력하세요.");
 				System.out.print(">>> ");
 				name = scanner.nextLine();
-
-				if (name.isEmpty() == false) {
+				
+				if (checkNameValid(name)) {
 					if ("quit".equals(name)) {
 						break;
 					}
@@ -48,8 +48,9 @@ public class ChatClientApp {
 					{
 						System.out.println("Unexpected Error.\n");
 					}
-				} 
-				System.out.println("대화명은 한글자 이상 입력해야 합니다.\n");
+				} else {
+					System.out.println("대화명 한글자 이상 입력 및 ':'문자, \"whis\"문자열을 허용하지 않습니다.\n");
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -60,6 +61,10 @@ public class ChatClientApp {
 		//2. iostream
 		//3. join 프로토콜
 		
+	}
+	
+	static Boolean checkNameValid(String name) {
+		return (name.isEmpty() || name.contains(":") || name.contains("whis")) ? false : true; 
 	}
 
 }

@@ -56,6 +56,9 @@ public class ChatServerConnection implements Runnable {
 				} else if ("message".equals(tokens[0])) {
 					int start = request.indexOf(":") + 1;
 					doMessage(request.substring(start));
+				} else if ("whis".equals(tokens[0])) {
+					if(!doWhis(request.substring(5)))
+						pr.println("Whisp failed : none valid nickname");
 				}
 
 			}
@@ -64,7 +67,21 @@ public class ChatServerConnection implements Runnable {
 			_nickList.remove(_nickName);
 		}
 	}
-
+	
+	private Boolean doWhis(String wispMessage) {
+		//wispMessage = from:to:message
+		//[0] : from
+		//[1] : to
+		String[] strToken = wispMessage.split(":");
+		if(!_nickList.contains(strToken[1]))					
+			return false;
+		
+		int msgIndex = wispMessage.indexOf(":",strToken[0].length()+strToken[1].length());
+		String msg = String.format("whis:%s:[whis]%s:%s",
+				strToken[1],strToken[0],wispMessage.substring(msgIndex+1));
+		broadcast(msg);
+		return true;
+	}
 	private void doQuit(PrintWriter writer) {
 		removeWriter(writer);
 
